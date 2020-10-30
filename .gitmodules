@@ -1,0 +1,3 @@
+[submodule "react-chatbot"]
+	path = react-chatbot
+	url = https://github.com/kecsou/react-chatbot.git
