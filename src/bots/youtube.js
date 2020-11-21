@@ -1,21 +1,20 @@
 const { google } = require('googleapis');
+const { v4: uuidV4 } = require('uuid');
+const { addBotToList } =  require('./botList');
 
 /**
  * @desc Use for recognize an intended message for the youtube bot
  */
-const pattern = /^#y/;
+const pattern = /^#y\s{0,}?/;
+
+const botName = 'bot-youtube';
+
+addBotToList(botName, 'Search any video on youtube');
 
 const youtube = google.youtube({
   version: 'v3',
   auth: process.env.youtubeKey,
 });
-
-/**
- * 
- * @param {Object} res
- * @desc Exctract videos's identifiers from the youtube response
- */
-const formatYoutubeResponse = ({ data: { items = [] } }) => items.map((item) => item.id.videoId);
 
 /**
  *
@@ -27,10 +26,22 @@ const bot = (message = '') => {
     part: 'snippet',
     q: message,
     type: 'video',
-  }).then(formatYoutubeResponse)
-    .catch((e) => {
-      console.error(e);
-    });
+  })
+  .then(({ data: { items = [] } }) => ({
+    date: new Date(),
+    from: botName,
+    id: uuidV4(),
+    items: items.map((item) => ({
+      description: item.snippet.description,
+      id: item.id.videoId,
+      title: item.snippet.title
+    })),
+    type: 'youtube',
+    query: message,
+  }))
+  .catch((e) => {
+    console.error(e);
+  });
 };
 
 module.exports = {

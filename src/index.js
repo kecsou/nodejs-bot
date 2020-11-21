@@ -21,19 +21,14 @@ dotenv.config({
 });
 
 const CommandParser = require('./bots/command-parser');
+const { botList } = require('./bots/botList');
 const User = require('./User');
-const { getUserBySocket } = require('./utils');
 
 const app = express();
 
 const PORT = process.env.port || 8080;
 
-const bots = [{
-  id: uuidV4(),
-  from: 'youtube',
-}];
-
-const users = new Map();
+let users = [];
 
 /**
  * @type {Message[]}
@@ -47,7 +42,7 @@ const server = app.listen(PORT, () => {
 });
 
 const io = socketIo(server);
-
+/*
 io.use((socket, next) => {
   if (!socket.handshake.query
     || typeof socket.handshake.query !== 'object') {
@@ -60,46 +55,72 @@ io.use((socket, next) => {
     return;
   }
 
-  if (typeof socket.handshake.query.position !== 'object') {
-    next(new Error('No position provided'));
-    return;
-  }
-
-  if (typeof socket.handshake.query.position.latitude !== 'number') {
+  const { description, latitude, longitude, username } = socket.handshake.query;
+  if (typeof latitude !== 'string' && !isNaN(latitude)) {
     next(new Error('The latitude should be a number'));
     return;
   }
 
-  if (typeof socket.handshake.query.position.longitude !== 'number') {
+  if (typeof longitude !== 'string' && !isNaN(longitude)) {
     next(new Error('The longitude should be a number'));
     return;
   }
 
-  const { position, username } = socket.handshake.query;
-  users.set(username, new User(uuidV4(), position, username, socket));
+  const position = { latitude, longitude };
+  users.push(new User(description, uuidV4(), position, username, socket));
   next();
 });
-
+*/
 io.on('connection', (socket) => {
-  socket.emit('users', users.entries()
-    .map((kv) => kv[0])
-  );
-  socket.emit('bots', bots);
+  if (!socket.handshake.query
+    || typeof socket.handshake.query !== 'object') {
+    return;
+  }
+
+  const { description, username } = socket.handshake.query;
+
+  if (typeof socket.handshake.query.username !== 'string') {
+    return;
+  }
+
+  if (!users.some((user) => user.username === username)) {
+    users.push(new User(description, uuidV4(), username, socket));
+  }
+
+  socket.emit('bots', botList);
+  socket.emit('messages', messages);
+  socket.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
 
   socket.on('message-send', async (messageDTO) => {
-    const { content } = messageDTO;
-    const user = getUserBySocket(socket, users);
-    if (user) {
-      const messageResponse = await CommandParser(content, user);
-      if (messageResponse) {
-        messages.push(messageResponse);
+    try {
+      const { content } = messageDTO;
+      const user = users.find((user) => user.username === username);
+      if (user) {
+        const messageResponse = await CommandParser(content, user);
+        if (messageResponse !== null) {
+          messages.push(messageResponse);
+          io.emit('message', messageResponse);
+        } else {
+          const message = {
+            date: new Date(),
+            id: uuidV4(),
+            type: 'plain',
+            ...messageDTO,
+          };
+          messages.push(message);
+          io.emit('message', message);
+        }
       }
+    } catch(e) {
+      console.error(e);
     }
-    io.emit('message', messageDTO);
   });
 
   socket.on('disconnect', () => {
-    const { username } = getUserBySocket(socket, users);
-    users.delete(username);
+    const user = users.find((user) => user.socket === socket);
+    if (user) {
+      const { username } = user;
+      users = users.filter((user) => user.username === username);
+    }
   });
 });
