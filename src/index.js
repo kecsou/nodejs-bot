@@ -42,35 +42,7 @@ const server = app.listen(PORT, () => {
 });
 
 const io = socketIo(server);
-/*
-io.use((socket, next) => {
-  if (!socket.handshake.query
-    || typeof socket.handshake.query !== 'object') {
-    next(new Error('No query provided'));
-    return;
-  }
 
-  if (typeof socket.handshake.query.username !== 'string') {
-    next(new Error('Username should be provided'));
-    return;
-  }
-
-  const { description, latitude, longitude, username } = socket.handshake.query;
-  if (typeof latitude !== 'string' && !isNaN(latitude)) {
-    next(new Error('The latitude should be a number'));
-    return;
-  }
-
-  if (typeof longitude !== 'string' && !isNaN(longitude)) {
-    next(new Error('The longitude should be a number'));
-    return;
-  }
-
-  const position = { latitude, longitude };
-  users.push(new User(description, uuidV4(), position, username, socket));
-  next();
-});
-*/
 io.on('connection', (socket) => {
   if (!socket.handshake.query
     || typeof socket.handshake.query !== 'object') {

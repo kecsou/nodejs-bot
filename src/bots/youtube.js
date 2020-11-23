@@ -5,7 +5,7 @@ const { addBotToList } =  require('./botList');
 /**
  * @desc Use for recognize an intended message for the youtube bot
  */
-const pattern = /^#y\s{0,}?/;
+const pattern = /^#y(outube)?\s{0,}/i;
 
 const botName = 'bot-youtube';
 
@@ -41,6 +41,7 @@ const bot = (message = '') => {
   }))
   .catch((e) => {
     console.error(e);
+    return null;
   });
 };
 
