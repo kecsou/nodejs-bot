@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
 
   socket.emit('bots', botList);
   socket.emit('messages', messages);
-  socket.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
+  io.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
 
   socket.on('message-send', async (messageDTO) => {
     try {
@@ -89,10 +89,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('disconnect', () => {
-    const user = users.find((user) => user.socket === socket);
-    if (user) {
-      const { username } = user;
-      users = users.filter((user) => user.username === username);
-    }
+    users = users.filter((user) => user.username !== username);
+    io.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
   });
 });
