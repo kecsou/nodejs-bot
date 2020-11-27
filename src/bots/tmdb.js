@@ -17,6 +17,7 @@ const searchByName = (name = '') => {
       from: botName,
       id: uuidV4(),
       items: results.map((item) => ({
+        id: uuidV4(),
         overview: item.overview,
         poster_path: item.poster_path,
         release_date: item.release_date,
