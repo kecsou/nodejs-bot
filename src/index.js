@@ -70,8 +70,12 @@ io.on('connection', (socket) => {
       if (user) {
         const messageResponse = await CommandParser(content, user);
         if (messageResponse !== null) {
-          messages.push(messageResponse);
-          io.emit('message', messageResponse);
+          const messageResponseDTO = {
+            ...messageResponse,
+            from: username
+          };
+          messages.push(messageResponseDTO);
+          io.emit('message', messageResponseDTO);
         } else {
           const message = {
             date: new Date(),
