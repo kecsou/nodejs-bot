@@ -5,15 +5,15 @@ const { addBotToList } =  require('./botList');
 /**
  * @desc Use for recognize an intended message for the youtube bot
  */
-const pattern = /^#y(outube)?\s{0,}/i;
+const pattern = /^#youtube\s{0,}/i;
 
 const botName = 'bot-youtube';
 
-addBotToList(botName, 'Search any video on youtube');
+addBotToList(botName, '#youtube <video name>');
 
 const youtube = google.youtube({
   version: 'v3',
-  auth: process.env.youtubeKey,
+  auth: process.env.googleApiKey,
 });
 
 /**

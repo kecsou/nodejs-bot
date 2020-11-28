@@ -2,9 +2,9 @@ const axios = require('axios');
 const { addBotToList } = require('./botList');
 const { v4: uuidV4 } = require('uuid');
 
-const pattern = /^#w(eather)?\s{0,}/i;
+const pattern = /^#weather\s{0,}/i;
 const botName = 'bot-weatherstack';
-addBotToList(botName, 'Just provide me a town and I will give you its weather');
+addBotToList(botName, '#weather <town name>');
 
 const getMeteoByTown = (town = '') => {
   const queries = new URLSearchParams({

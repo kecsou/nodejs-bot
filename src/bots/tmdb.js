@@ -3,11 +3,11 @@ const { v4: uuidV4 } = require('uuid');
 
 const { addBotToList } =  require('./botList');
 
-const pattern = /^#tmdb\s{0,}?/i;
+const pattern = /^#tmdb\s{0,}/i;
 
-const botName = 'The movie database';
+const botName = 'TMDB';
 
-addBotToList(botName, 'Search a movie');
+addBotToList(botName, '#tmdb <movie name>');
 
 const searchByName = (name = '') => {
   const url = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.tmdbKey}&language=en-US&page=1&include_adult=false&query=${name}`;
