@@ -3,7 +3,7 @@ const { addBotToList } = require('./botList');
 const { v4: uuidV4 } = require('uuid');
 
 const pattern = /^#weather\s{0,}/i;
-const botName = 'bot-weatherstack';
+const botName = 'Weatherstack';
 addBotToList(botName, '#weather <town name>');
 
 const getMeteoByTown = (town = '') => {

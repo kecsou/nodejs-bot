@@ -7,7 +7,7 @@ const { addBotToList } =  require('./botList');
  */
 const pattern = /^#youtube\s{0,}/i;
 
-const botName = 'bot-youtube';
+const botName = 'Youtube';
 
 addBotToList(botName, '#youtube <video name>');
 
