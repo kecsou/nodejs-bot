@@ -46,17 +46,24 @@ const io = socketIo(server);
 io.on('connection', (socket) => {
   if (!socket.handshake.query
     || typeof socket.handshake.query !== 'object') {
+      socket.disconnect('unauthorized');
     return;
   }
 
-  const { description, username } = socket.handshake.query;
+  const { description, latitude, longitude, username } = socket.handshake.query;
 
   if (typeof socket.handshake.query.username !== 'string') {
+    socket.disconnect('unauthorized');
+    return;
+  }
+
+  if (isNaN(latitude) || isNaN(longitude)) {
+    socket.disconnect('unauthorized');
     return;
   }
 
   if (!users.some((user) => user.username === username)) {
-    users.push(new User(description, uuidV4(), username, socket));
+    users.push(new User(description, uuidV4(), latitude, longitude, username, socket));
   }
 
   socket.emit('bots', botList);

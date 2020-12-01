@@ -18,7 +18,12 @@ const {
   translateText,
 } = require('./translate');
 
-module.exports = (message = '') => {
+const {
+  pattern: patterWhereAmI,
+  whereAmI,
+} = require('./whereAmI');
+
+module.exports = (message = '', user) => {
   if (patternYoutube.test(message)) {
     return botYoutube(message.replace(patternYoutube, ''));
   }
@@ -36,6 +41,10 @@ module.exports = (message = '') => {
     const target = targetAndMessage.split(' ')[0].trim();
     const textToTranslate = targetAndMessage.replace(target, '').trim();
     return translateText(target, textToTranslate);
+  }
+
+  if (patterWhereAmI.test(message)) {
+    return whereAmI(user.latitude, user.longitude);
   }
 
   return Promise.resolve(null);
