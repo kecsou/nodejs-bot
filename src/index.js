@@ -35,7 +35,7 @@ let users = [];
  */
 const messages = [];
 
-app.use(express.static(resolve(`${__dirname}public`)));
+app.use(express.static(resolve(`${__dirname}/../public`)));
 
 const server = app.listen(PORT, () => {
   console.log(`Chat bot is listenning on port ${PORT}`);
