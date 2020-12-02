@@ -2,7 +2,9 @@ version: '3'
 
 services:
   chat:
-    image: mynes/nodejs-bot@latest
-    env:
-      - port: 80
+    image: mynes/nodejs-bot
+    ports:
+      - "80:80"
+    environment:
+      - port=80
       # Specify all apiKeys here

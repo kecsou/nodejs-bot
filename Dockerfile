@@ -8,6 +8,8 @@ RUN mkdir -p /chat/public
 COPY . /chat
 COPY docker-entrypoint.sh /
 
+RUN chmod +x /docker-entrypoint.sh
+
 # Clone all sumbmodules
 RUN cd /chat && \
   git submodule update --init --recursive --remote
@@ -25,4 +27,4 @@ RUN cd /chat/react-chatbot && \
 RUN cd /chat && \
   yarn install
 
-ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["/docker-entrypoint.sh"]
