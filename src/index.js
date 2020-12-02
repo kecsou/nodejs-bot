@@ -20,6 +20,19 @@ dotenv.config({
   path: pathDotEnv,
 });
 
+const apiKeys = [
+  'googleApiKey',
+  'tmdbKey',
+  'weatherstack'
+];
+
+for (const apiKey of apiKeys) {
+  if (typeof process.env[apiKey] !== 'string') {
+    console.error(`Key ${apiKey} not provided as string`);
+    process.exit(1);
+  }
+}
+
 const CommandParser = require('./bots/command-parser');
 const { botList } = require('./bots/botList');
 const User = require('./User');
