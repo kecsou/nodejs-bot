@@ -92,7 +92,7 @@ io.on('connection', (socket) => {
         if (messageResponse !== null) {
           const messageResponseDTO = {
             ...messageResponse,
-            from: username
+            by: username,
           };
           messages.push(messageResponseDTO);
           io.emit('message', messageResponseDTO);

@@ -23,6 +23,11 @@ const {
   whereAmI,
 } = require('./whereAmI');
 
+const {
+  pattern: patternMapSearch,
+  mapSearch
+} = require('./mapSearch');
+
 module.exports = (message = '', user) => {
   if (patternYoutube.test(message)) {
     return botYoutube(message.replace(patternYoutube, ''));
@@ -45,6 +50,10 @@ module.exports = (message = '', user) => {
 
   if (patterWhereAmI.test(message)) {
     return whereAmI(user.latitude, user.longitude);
+  }
+
+  if (patternMapSearch.test(message)) {
+    return mapSearch(message.replace(patternMapSearch, ''), user.latitude, user.longitude);
   }
 
   return Promise.resolve(null);
