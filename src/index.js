@@ -86,10 +86,6 @@ io.on('connection', (socket) => {
 
   if (!users.some((user) => user.username === username)) {
     users.push(new User(description, uuidV4(), latitude, longitude, username, socket));
-  } else {
-    console.log(`Conflict username ${JSON.stringify(socket.handshake.query)}`);
-    socket.disconnect('Username already in use');
-    return;
   }
 
   console.log(`User ${username} connected`);
