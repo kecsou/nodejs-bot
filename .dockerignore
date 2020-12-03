@@ -1,0 +1,11 @@
+node_modules
+.vscode
+.env
+docker-compose.yaml
+dockerfile
+.gitignore
+README.md
+.dockerignore
+react-chatbot/node_modules
+.eslintrs.json
+public/*
