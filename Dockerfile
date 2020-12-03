@@ -17,7 +17,7 @@ RUN cd /chat && \
 # Build front-end assets
 RUN cd /chat/react-chatbot && \
   yarn install && \
-  SKIP_PREFLIGHT_CHECK=true yarn run build && \
+  SKIP_PREFLIGHT_CHECK=true REACT_APP_SERVER_ADRESS=/ yarn run build && \
   mv build/* /chat/public && \
   # Clean up before commit
   cd /chat && \
