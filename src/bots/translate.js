@@ -4,7 +4,8 @@ const { addBotToList } =  require('./botList');
 
 const pattern  = /^#translate /i
 
-addBotToList('Translator', '#translate <target language> <your message>');
+const botName = 'Translator';
+addBotToList(botName, '#translate <target language> <your message>');
 
 const translate = new Translate({
   key: process.env.googleApiKey,
@@ -22,6 +23,7 @@ const translateText = async (target = 'fr', text = '',) => {
 
     return {
       date: new Date(),
+      from: botName,
       id: uuidV4(),
       translations,
       type: 'translation',
