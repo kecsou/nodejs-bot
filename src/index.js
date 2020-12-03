@@ -59,6 +59,7 @@ const io = socketIo(server);
 io.on('connection', (socket) => {
   if (!socket.handshake.query
     || typeof socket.handshake.query !== 'object') {
+      console.log(`Unauthorized query ${socket.handshake.query}`);
       socket.disconnect('unauthorized');
     return;
   }
@@ -66,18 +67,32 @@ io.on('connection', (socket) => {
   const { description, latitude, longitude, username } = socket.handshake.query;
 
   if (typeof socket.handshake.query.username !== 'string') {
+    console.log(`Unauthorized username ${JSON.stringify(socket.handshake.query)}`);
     socket.disconnect('unauthorized');
     return;
   }
 
-  if (isNaN(latitude) || isNaN(longitude)) {
+  if (isNaN(latitude)) {
+    console.log(`Unauthorized latitude ${JSON.stringify(socket.handshake.query)}`);
+    socket.disconnect('unauthorized');
+    return;
+  }
+
+  if (isNaN(longitude)) {
+    console.log(`Unauthorized longitude ${JSON.stringify(socket.handshake.query)}`);
     socket.disconnect('unauthorized');
     return;
   }
 
   if (!users.some((user) => user.username === username)) {
     users.push(new User(description, uuidV4(), latitude, longitude, username, socket));
+  } else {
+    console.log(`Conflict username ${JSON.stringify(socket.handshake.query)}`);
+    socket.disconnect('Username already in use');
+    return;
   }
+
+  console.log(`User ${username} connected`);
 
   socket.emit('bots', botList);
   socket.emit('messages', messages);
@@ -85,6 +100,10 @@ io.on('connection', (socket) => {
 
   socket.on('message-send', async (messageDTO) => {
     try {
+      console.log(`User ${username} send a message`);
+      console.log('Message content:');
+      console.log(JSON.stringify(messageDTO));
+
       const { content } = messageDTO;
       const user = users.find((user) => user.username === username);
       if (user) {
@@ -109,10 +128,12 @@ io.on('connection', (socket) => {
       }
     } catch(e) {
       console.error(e);
+      console.log(`Error obtained in ${username} context`);
     }
   });
 
   socket.on('disconnect', () => {
+    console.log(`User ${username} disconnected`);
     users = users.filter((user) => user.username !== username);
     io.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
   });

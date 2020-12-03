@@ -29,9 +29,8 @@ const mapSearch = (query, latitude, longitude) => {
         date: new Date(),
         from: botName,
         id: uuidV4(),
-        notfound: true,
         query,
-        type: 'mapsearch',
+        type: 'noresultfound',
       };
     }
 
@@ -63,12 +62,18 @@ const mapSearch = (query, latitude, longitude) => {
       lat: latitude,
       lng: longitude,
       type: 'mapsearch',
-      notfound: false
     };
   })
   .catch((error) => {
     console.error(error);
-    return null;
+    return {
+      id: uuidV4(),
+      date: new Date(),
+      description,
+      from: botName,
+      type: 'unexpectederror',
+      query: JSON.stringify({ query, latitude, longitude }),
+    };
   });
 };
 

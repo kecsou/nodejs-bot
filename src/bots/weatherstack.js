@@ -14,12 +14,15 @@ const getMeteoByTown = (town = '') => {
 
   return axios.get(`http://api.weatherstack.com/current?${queries}`)
     .then(({ data }) => {
+      if (data.error) {
+        throw data.error;
+      }
+
       let weatherIcon = null;
       let description = null;
       const windSpeed = data.current.wind_speed;
-      const { query } = data.request;
       const { humidity, temperature } = data.current;
-      const { localtime } = data.location;
+      const { localtime, name } = data.location;
 
       if (data.current.weather_icons.length > 0) {
         weatherIcon = data.current.weather_icons[0];
@@ -36,7 +39,7 @@ const getMeteoByTown = (town = '') => {
         from: botName,
         humidity,
         localtime,
-        query,
+        query: name,
         temperature,
         type: 'weatherstack',
         weatherIcon,
@@ -45,7 +48,13 @@ const getMeteoByTown = (town = '') => {
     })
     .catch((e) => {
       console.error('getMeteoTown', e);
-      return null;
+      return {
+        id: uuidV4(),
+        date: new Date(),
+        from: botName,
+        type: 'unexpectederror',
+        query: town,
+      };
     });
 };
 

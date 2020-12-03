@@ -41,7 +41,14 @@ const bot = (message = '') => {
   }))
   .catch((e) => {
     console.error(e);
-    return null;
+    return {
+      id: uuidV4(),
+      date: new Date(),
+      description,
+      from: botName,
+      type: 'unexpectederror',
+      query: message,
+    };
   });
 };
 
