@@ -102,7 +102,7 @@ io.on('connection', (socket) => {
       socket.disconnect();
       return;
     }
-    existingUser.addSocket(socket);
+
   } else { // No user found
     const connectionId = uuidV4();
     const user = new User(connectionId, description, uuidV4(), latitude, longitude, username);
