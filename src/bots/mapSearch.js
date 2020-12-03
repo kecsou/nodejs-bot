@@ -69,7 +69,6 @@ const mapSearch = (query, latitude, longitude) => {
     return {
       id: uuidV4(),
       date: new Date(),
-      description,
       from: botName,
       type: 'unexpectederror',
       query: JSON.stringify({ query, latitude, longitude }),

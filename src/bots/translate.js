@@ -34,7 +34,6 @@ const translateText = async (target = 'fr', text = '',) => {
     return {
       id: uuidV4(),
       date: new Date(),
-      description,
       from: botName,
       type: 'unexpectederror',
       query: JSON.stringify({ target, text }),
