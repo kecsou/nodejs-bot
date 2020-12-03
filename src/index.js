@@ -48,7 +48,9 @@ let users = [];
  */
 const messages = [];
 
-app.use(express.static(resolve(`${__dirname}/../public`)));
+const publicPath = resolve(`${__dirname}/../public`);
+
+app.use(express.static(publicPath));
 
 const server = app.listen(PORT, () => {
   console.log(`Chat bot is listenning on port ${PORT}`);
@@ -133,4 +135,8 @@ io.on('connection', (socket) => {
     users = users.filter((user) => user.username !== username);
     io.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
   });
+});
+
+app.get('*', (_, res) =>{
+  res.sendFile(`${publicPath}/index.html`);
 });
