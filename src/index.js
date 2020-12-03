@@ -41,7 +41,7 @@ const app = express();
 
 const PORT = process.env.port || 80;
 
-let users = [];
+const users = [];
 
 /**
  * @type {Message[]}
@@ -66,13 +66,20 @@ io.on('connection', (socket) => {
     return;
   }
 
-  const { description, latitude, longitude, username } = socket.handshake.query;
+  const {
+    description,
+    latitude,
+    longitude,
+    connectionId,
+  } = socket.handshake.query;
 
   if (typeof socket.handshake.query.username !== 'string') {
     console.log(`Unauthorized username ${JSON.stringify(socket.handshake.query)}`);
     socket.disconnect('unauthorized');
     return;
   }
+
+  const username = socket.handshake.query.username.toLocaleLowerCase().trim();
 
   if (isNaN(latitude)) {
     console.log(`Unauthorized latitude ${JSON.stringify(socket.handshake.query)}`);
@@ -86,8 +93,21 @@ io.on('connection', (socket) => {
     return;
   }
 
-  if (!users.some((user) => user.username === username)) {
-    users.push(new User(description, uuidV4(), latitude, longitude, username, socket));
+  const existingUser = users.find((user) => user.username.toLocaleLowerCase().trim() === username);
+
+  if (existingUser !== undefined) {
+    if (existingUser.connectionId !== connectionId) { //User found but and unknow connectionId
+      console.log(`Unauthorized username already in use ${JSON.stringify(socket.handshake.query)}`);
+      socket.emit('error-authent', `Username ${username} already in use`);
+      socket.disconnect();
+      return;
+    }
+    existingUser.addSocket(socket);
+  } else { // No user found
+    const connectionId = uuidV4();
+    const user = new User(connectionId, description, uuidV4(), latitude, longitude, username);
+    users.push(user);
+    socket.emit('success-authent', connectionId);
   }
 
   console.log(`User ${username} connected`);
@@ -132,8 +152,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log(`User ${username} disconnected`);
-    users = users.filter((user) => user.username !== username);
-    io.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
+    const indexUser = users.findIndex((user) => user.username === username);
+    if (indexUser !== -1) {
+      users.splice(indexUser, 1);
+      io.emit('users', users.map(({ description, id, username }) => ({ description, id, username })));
+    }
   });
 });
 
