@@ -8,3 +8,7 @@ services:
     environment:
       - port=80
       # Specify all apiKeys here
+      # - googleApiKey=''
+      # - googleApiKey=''
+      # - tmdbKey=''
+      # - weatherstack=''
